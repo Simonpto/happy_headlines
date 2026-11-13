@@ -1,7 +1,9 @@
-# Tests run without Docker against an in-memory H2 database
+# Tests run without Docker against an in-memory H2 database, and nothing is sent to Seq
 spring:
   application:
     name: comment-service
+  config:
+    import: classpath:monitoring.yaml
   datasource:
     url: jdbc:h2:mem:comments;DB_CLOSE_DELAY=-1
     username: sa
@@ -9,3 +11,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+management:
+  tracing:
+    export:
+      enabled: false
+  logging:
+    export:
+      otlp:
+        enabled: false

@@ -1,6 +1,8 @@
 spring:
   application:
     name: profanity-service
+  config:
+    import: classpath:monitoring.yaml
   datasource:
     url: jdbc:postgresql://db-profanity:5432/profanities
     username: ${DB_USER}

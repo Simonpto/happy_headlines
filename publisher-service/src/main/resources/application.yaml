@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: publisher-service
+  config:
+    import: classpath:monitoring.yaml
+  rabbitmq:
+    host: rabbitmq

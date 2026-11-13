@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: newsletter-service
+  config:
+    import: classpath:monitoring.yaml
+  datasource:
+    url: jdbc:postgresql://db-newsletter:5432/newsletters
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+  rabbitmq:
+    host: rabbitmq
+
+articles:
+  url: http://load-balancer:80

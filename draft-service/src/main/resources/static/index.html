@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy Headlines - Write</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 16px; display: flex; gap: 24px; }
+    aside { width: 260px; } main { flex: 1; }
+    input, select, textarea { width: 100%; box-sizing: border-box; margin-bottom: 8px; padding: 6px; }
+    textarea { height: 300px; }
+    li { cursor: pointer; padding: 4px 0; } li:hover { text-decoration: underline; }
+    #status { color: #555; }
+  </style>
+</head>
+<body>
+<aside>
+  <h2>Drafts</h2>
+  <button onclick="newDraft()">+ New draft</button>
+  <ul id="drafts"></ul>
+</aside>
+<main>
+  <h2 id="heading">New draft</h2>
+  <input id="title" placeholder="Title">
+  <select id="continent">
+    <option>global</option><option>africa</option><option>antarctica</option><option>asia</option>
+    <option>europe</option><option>north-america</option><option>oceania</option><option>south-america</option>
+  </select>
+  <textarea id="content" placeholder="Write something happy..."></textarea>
+  <button onclick="save()">Save draft</button>
+  <button id="publish" onclick="publish()">Publish</button>
+  <p id="status"></p>
+</main>
+<script>
+  let current = null;
+  const $ = id => document.getElementById(id);
+
+  async function call(method, url, body) {
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
+    if (!res.ok) throw new Error((await res.json()).message || res.statusText);
+    return res.status === 204 ? null : res.json();
+  }
+
+  async function load() {
+    const drafts = await call('GET', '/drafts');
+    $('drafts').innerHTML = '';
+    for (const d of drafts) {
+      const li = document.createElement('li');
+      li.textContent = (d.title || '(untitled)') + (d.published ? ' ✓' : '');
+      li.onclick = () => show(d);
+      $('drafts').append(li);
+    }
+  }
+
+  function show(d) {
+    current = d;
+    $('heading').textContent = d ? (d.published ? 'Published' : 'Draft ' + d.id) : 'New draft';
+    $('title').value = d?.title || '';
+    $('content').value = d?.content || '';
+    $('continent').value = d?.continent || 'global';
+    $('publish').disabled = !!d?.published;
+    $('status').textContent = '';
+  }
+
+  function newDraft() { show(null); }
+
+  async function save() {
+    const body = { title: $('title').value, content: $('content').value, continent: $('continent').value };
+    try {
+      const d = current ? await call('PUT', '/drafts/' + current.id, body) : await call('POST', '/drafts', body);
+      show(d); $('status').textContent = 'Saved'; load();
+    } catch (e) { $('status').textContent = 'Error: ' + e.message; }
+  }
+
+  async function publish() {
+    try {
+      await save();
+      show(await call('POST', '/drafts/' + current.id + '/publish'));
+      $('status').textContent = 'Published!'; load();
+    } catch (e) { $('status').textContent = 'Error: ' + e.message; }
+  }
+
+  load();
+</script>
+</body>
+</html>

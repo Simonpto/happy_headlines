@@ -1,7 +1,14 @@
-# Tests run without Docker: each continent gets its own in-memory H2 database
+# Tests run without Docker: each continent gets its own in-memory H2 database,
+# no RabbitMQ and nothing is sent to Seq
 spring:
   application:
     name: article-service
+  config:
+    import: classpath:monitoring.yaml
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
 
 articles:
   databases:
@@ -15,3 +22,12 @@ articles:
     global:        jdbc:h2:mem:global;DB_CLOSE_DELAY=-1
   username: sa
   password: ""
+
+management:
+  tracing:
+    export:
+      enabled: false
+  logging:
+    export:
+      otlp:
+        enabled: false

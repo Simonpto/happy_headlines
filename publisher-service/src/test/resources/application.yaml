@@ -1,0 +1,15 @@
+# Tests run without Docker: no RabbitMQ and nothing is sent to Seq
+spring:
+  application:
+    name: publisher-service
+  config:
+    import: classpath:monitoring.yaml
+
+management:
+  tracing:
+    export:
+      enabled: false
+  logging:
+    export:
+      otlp:
+        enabled: false

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: draft-service
+  config:
+    import: classpath:monitoring.yaml
+  datasource:
+    url: jdbc:postgresql://db-draft:5432/drafts
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+
+publisher:
+  url: http://publisher-service:8080
+
+logging:
+  level:
+    simon.draftservice: DEBUG

@@ -30,6 +30,7 @@ x-article-service: &article-service
     db-oceania: { condition: service_healthy }
     db-south-america: { condition: service_healthy }
     db-global: { condition: service_healthy }
+    rabbitmq: { condition: service_healthy }
 
 services:
   article-service-1: *article-service
@@ -82,3 +83,62 @@ services:
     environment:
       <<: *postgres-login
       POSTGRES_DB: profanities
+
+  draft-service:
+    build: ./draft-service
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8081:8080"
+    restart: on-failure
+    depends_on:
+      db-draft: { condition: service_healthy }
+      publisher-service: { condition: service_started }
+
+  db-draft:
+    <<: *postgres
+    environment:
+      <<: *postgres-login
+      POSTGRES_DB: drafts
+
+  publisher-service:
+    build: ./publisher-service
+    restart: on-failure
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  newsletter-service:
+    build: ./newsletter-service
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8082:8080"
+    restart: on-failure
+    depends_on:
+      db-newsletter: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  db-newsletter:
+    <<: *postgres
+    environment:
+      <<: *postgres-login
+      POSTGRES_DB: newsletters
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      retries: 20
+
+  seq:
+    image: datalust/seq:latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+    ports:
+      - "5342:80"

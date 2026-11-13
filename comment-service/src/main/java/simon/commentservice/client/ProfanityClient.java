@@ -18,7 +18,6 @@ public class ProfanityClient {
         return profanityRestClient.post().uri("/profanities/filter").body(content).retrieve().body(String.class);
     }
 
-    // Called when profanity-service fails or the circuit is open: refuse rather than save an unfiltered comment
     private String filterFallback(String content, Throwable error){
         throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Profanity service is unavailable, try again later");
     }

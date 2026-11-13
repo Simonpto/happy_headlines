@@ -22,5 +22,4 @@ public class CommentService {
         comment.setContent(profanityClient.filter(comment.getContent()));
         return this.repository.save(comment);
     }
-
 }

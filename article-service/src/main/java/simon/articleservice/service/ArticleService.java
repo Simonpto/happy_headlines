@@ -1,5 +1,6 @@
 package simon.articleservice.service;
 
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Observed(name = "article.service")
 public class ArticleService {
     private final ArticleDatabase database;
 

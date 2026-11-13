@@ -1,6 +1,8 @@
 spring:
   application:
     name: comment-service
+  config:
+    import: classpath:monitoring.yaml
   datasource:
     url: jdbc:postgresql://db-comment:5432/comments
     username: ${DB_USER}

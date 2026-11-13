@@ -9,13 +9,13 @@ import java.time.Duration;
 
 @Configuration
 public class RestClientConfig {
+    // Built from Spring's RestClient.Builder so the trace id is passed on to the profanity-service
     @Bean
-    public RestClient profanityRestClient() {
-        // Fail fast when profanity-service is down, so the circuit breaker can react
+    public RestClient profanityRestClient(RestClient.Builder builder) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(2));
         requestFactory.setReadTimeout(Duration.ofSeconds(3));
-        return RestClient.builder()
+        return builder
                 .baseUrl("http://profanity-service:8080")
                 .requestFactory(requestFactory)
                 .build();

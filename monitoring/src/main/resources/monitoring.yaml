@@ -1,0 +1,31 @@
+# Shared defaults - import from a service with: spring.config.import: classpath:monitoring.yaml
+# Logs and traces both go to Seq, our central log/trace repository (http://localhost:5342 in the browser)
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # trace every request - fine at our scale
+  observations:
+    annotations:
+      enabled: true # makes @Observed on methods create spans
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${SEQ_URL:http://seq:5341}/ingest/otlp/v1/traces
+    logging:
+      export:
+        otlp:
+          endpoint: ${SEQ_URL:http://seq:5341}/ingest/otlp/v1/logs
+  otlp:
+    metrics:
+      export:
+        enabled: false # we only collect logs and traces
+
+# Carry the trace id inside RabbitMQ messages, so a trace continues from the sender to the listener
+spring:
+  rabbitmq:
+    template:
+      observation-enabled: true
+    listener:
+      simple:
+        observation-enabled: true

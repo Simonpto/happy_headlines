@@ -16,15 +16,24 @@ public class ProfanityService {
     public ProfanityService(ProfanityRepository repository) {
         this.repository = repository;
     }
+
     public Profanity findById(long id){
         return this.repository.findById(id).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
+
     public Profanity create(Profanity profanity){
         return this.repository.save(profanity);
     }
+
     public String filter (String content){
-        Set<String> bannedWords = repository.findAll().stream().map(w->w.getWord().toLowerCase()).collect(Collectors.toSet());
-        return Arrays.stream(content.split("\\s+")).map(word -> bannedWords.contains(word.toLowerCase().replaceAll("\\p{Punct}", "")) ? "*".repeat(word.length()) : word).collect(Collectors.joining(" "));
+        Set<String> bannedWords = repository.findAll().stream().map(w->w.getWord()
+                .toLowerCase())
+                .collect(Collectors.toSet());
+        return Arrays.stream(content.split("\\s+")).map(word -> bannedWords
+                .contains(word.toLowerCase()
+                .replaceAll("\\p{Punct}", "")) ? "*"
+                .repeat(word.length()) : word)
+                .collect(Collectors.joining(" "));
     }
 
 }
