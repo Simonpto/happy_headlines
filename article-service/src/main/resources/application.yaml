@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: article-service
+
+articles:
+  databases:
+    africa:        jdbc:postgresql://db-africa:5432/articles
+    antarctica:    jdbc:postgresql://db-antarctica:5432/articles
+    asia:          jdbc:postgresql://db-asia:5432/articles
+    europe:        jdbc:postgresql://db-europe:5432/articles
+    north-america: jdbc:postgresql://db-north-america:5432/articles
+    oceania:       jdbc:postgresql://db-oceania:5432/articles
+    south-america: jdbc:postgresql://db-south-america:5432/articles
+    global:        jdbc:postgresql://db-global:5432/articles
+  username: ${DB_USER}
+  password: ${DB_PASSWORD}

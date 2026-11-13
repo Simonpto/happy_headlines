@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: profanity-service
+  datasource:
+    url: jdbc:postgresql://db-profanity:5432/profanities
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update

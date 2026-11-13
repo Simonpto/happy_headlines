@@ -1,0 +1,84 @@
+x-postgres: &postgres
+  image: postgres:18
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U postgres"]
+    interval: 2s
+    retries: 15
+
+x-postgres-login: &postgres-login
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+x-article-db: &article-db
+  <<: *postgres
+  environment:
+    <<: *postgres-login
+    POSTGRES_DB: articles
+
+x-article-service: &article-service
+  build: ./article-service
+  environment:
+    DB_USER: postgres
+    DB_PASSWORD: postgres
+  restart: on-failure
+  depends_on:
+    db-africa: { condition: service_healthy }
+    db-antarctica: { condition: service_healthy }
+    db-asia: { condition: service_healthy }
+    db-europe: { condition: service_healthy }
+    db-north-america: { condition: service_healthy }
+    db-oceania: { condition: service_healthy }
+    db-south-america: { condition: service_healthy }
+    db-global: { condition: service_healthy }
+
+services:
+  article-service-1: *article-service
+  article-service-2: *article-service
+  article-service-3: *article-service
+
+  load-balancer:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    depends_on: [article-service-1, article-service-2, article-service-3]
+
+  db-africa: *article-db
+  db-antarctica: *article-db
+  db-asia: *article-db
+  db-europe: *article-db
+  db-north-america: *article-db
+  db-oceania: *article-db
+  db-south-america: *article-db
+  db-global: *article-db
+
+  comment-service:
+    build: ./comment-service
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    restart: on-failure
+    depends_on:
+      db-comment: { condition: service_healthy }
+
+  db-comment:
+    <<: *postgres
+    environment:
+      <<: *postgres-login
+      POSTGRES_DB: comments
+
+  profanity-service:
+    build: ./profanity-service
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    restart: on-failure
+    depends_on:
+      db-profanity: { condition: service_healthy }
+
+  db-profanity:
+    <<: *postgres
+    environment:
+      <<: *postgres-login
+      POSTGRES_DB: profanities

@@ -1,0 +1,17 @@
+# Tests run without Docker: each continent gets its own in-memory H2 database
+spring:
+  application:
+    name: article-service
+
+articles:
+  databases:
+    africa:        jdbc:h2:mem:africa;DB_CLOSE_DELAY=-1
+    antarctica:    jdbc:h2:mem:antarctica;DB_CLOSE_DELAY=-1
+    asia:          jdbc:h2:mem:asia;DB_CLOSE_DELAY=-1
+    europe:        jdbc:h2:mem:europe;DB_CLOSE_DELAY=-1
+    north-america: jdbc:h2:mem:north-america;DB_CLOSE_DELAY=-1
+    oceania:       jdbc:h2:mem:oceania;DB_CLOSE_DELAY=-1
+    south-america: jdbc:h2:mem:south-america;DB_CLOSE_DELAY=-1
+    global:        jdbc:h2:mem:global;DB_CLOSE_DELAY=-1
+  username: sa
+  password: ""

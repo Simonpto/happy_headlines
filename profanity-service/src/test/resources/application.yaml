@@ -1,0 +1,11 @@
+# Tests run without Docker against an in-memory H2 database
+spring:
+  application:
+    name: profanity-service
+  datasource:
+    url: jdbc:h2:mem:profanities;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
