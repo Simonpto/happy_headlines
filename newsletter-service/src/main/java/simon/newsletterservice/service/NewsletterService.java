@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import simon.newsletterservice.client.ArticleClient;
 import simon.newsletterservice.model.Article;
 import simon.newsletterservice.model.Subscriber;
+import simon.newsletterservice.model.SubscriberEvent;
 import simon.newsletterservice.repository.SubscriberDatabase;
 
 import java.util.List;
@@ -25,14 +26,17 @@ public class NewsletterService {
         this.articleClient = articleClient;
     }
 
-    public Subscriber subscribe(Subscriber subscriber) {
-        Subscriber saved = database.insert(subscriber);
-        log.info("New subscriber {}", saved.getId());
-        return saved;
-    }
-
-    public List<Subscriber> findAll() {
-        return database.findAll();
+    // Called for every message on the subscriber queue
+    public void updateSubscriber(SubscriberEvent event) {
+        if (event.type() == SubscriberEvent.Type.SUBSCRIBED) {
+            Subscriber subscriber = new Subscriber(event.email());
+            subscriber.setId(event.id());
+            database.save(subscriber);
+            log.info("Sent welcome mail to new subscriber {}", event.id());
+        } else {
+            database.delete(event.id());
+            log.info("Removed subscriber {} from the newsletter", event.id());
+        }
     }
 
     // Called for every article that comes in on the queue

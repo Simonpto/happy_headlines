@@ -2,8 +2,6 @@ package simon.newsletterservice.repository;
 
 import io.micrometer.observation.annotation.Observed;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import simon.newsletterservice.model.Subscriber;
 
@@ -22,12 +20,15 @@ public class SubscriberDatabase {
         return jdbc.sql("SELECT id, email FROM subscriber ORDER BY id").query(Subscriber.class).list();
     }
 
-    public Subscriber insert(Subscriber subscriber) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbc.sql("INSERT INTO subscriber (email) VALUES (?)")
-                .param(subscriber.getEmail())
-                .update(keyHolder, "id");
-        subscriber.setId(keyHolder.getKeyAs(Long.class));
-        return subscriber;
+    // Delete first so the same message can be received twice without breaking anything
+    public void save(Subscriber subscriber) {
+        delete(subscriber.getId());
+        jdbc.sql("INSERT INTO subscriber (id, email) VALUES (?, ?)")
+                .params(subscriber.getId(), subscriber.getEmail())
+                .update();
+    }
+
+    public void delete(Long id) {
+        jdbc.sql("DELETE FROM subscriber WHERE id = ?").param(id).update();
     }
 }

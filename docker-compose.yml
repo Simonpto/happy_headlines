@@ -126,6 +126,24 @@ services:
       <<: *postgres-login
       POSTGRES_DB: newsletters
 
+  subscriber-service:
+    build: ./subscriber-service
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8083:8080"
+    restart: on-failure
+    depends_on:
+      db-subscriber: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  db-subscriber:
+    <<: *postgres
+    environment:
+      <<: *postgres-login
+      POSTGRES_DB: subscribers
+
   rabbitmq:
     image: rabbitmq:4-management
     ports:
