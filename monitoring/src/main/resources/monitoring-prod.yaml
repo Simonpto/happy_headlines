@@ -1,0 +1,7 @@
+# Production (SPRING_PROFILES_ACTIVE=prod): only warnings and errors are logged.
+# That drops the per-request INFO line from RequestLoggingFilter and all DEBUG/INFO lines in hot paths,
+# while failed requests (4xx/5xx) and real problems are still logged and sent to Seq.
+logging:
+  level:
+    root: WARN
+    simon: WARN

@@ -20,8 +20,8 @@ class ArticleServiceTests {
         Article saved = service.create(Continent.EUROPE, new Article("Danish news", "Something happy"));
 
         assertThat(service.findById(Continent.EUROPE, saved.getId())).isPresent();
-        assertThat(service.findAll(Continent.ASIA)).isEmpty();
-        assertThat(service.findAll(Continent.GLOBAL)).isEmpty();
+        assertThat(service.findAll(Continent.ASIA, 0, 20)).isEmpty();
+        assertThat(service.findAll(Continent.GLOBAL, 0, 20)).isEmpty();
     }
 
     @Test

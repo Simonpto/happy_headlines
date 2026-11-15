@@ -19,8 +19,10 @@ public class ArticleController {
     }
 
     @GetMapping
-    List<Article> getArticles(@PathVariable String continent) {
-        return service.findAll(toContinent(continent));
+    List<Article> getArticles(@PathVariable String continent,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "20") int pageSize) {
+        return service.findAll(toContinent(continent), Math.max(page, 0), Math.clamp(pageSize, 1, 100));
     }
 
     @GetMapping("/{id}")

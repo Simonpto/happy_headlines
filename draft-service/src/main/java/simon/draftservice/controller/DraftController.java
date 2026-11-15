@@ -17,8 +17,9 @@ public class DraftController {
     }
 
     @GetMapping
-    List<Draft> getDrafts() {
-        return service.findAll();
+    List<Draft> getDrafts(@RequestParam(defaultValue = "0") int page,
+                          @RequestParam(defaultValue = "20") int pageSize) {
+        return service.findAll(Math.max(page, 0), Math.clamp(pageSize, 1, 100));
     }
 
     @GetMapping("/{id}")

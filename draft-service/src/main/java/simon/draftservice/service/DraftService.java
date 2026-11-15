@@ -26,8 +26,8 @@ public class DraftService {
         this.publisherRestClient = publisherRestClient;
     }
 
-    public List<Draft> findAll() {
-        return database.findAll();
+    public List<Draft> findAll(int page, int pageSize) {
+        return database.findAll(page, pageSize);
     }
 
     public Draft findById(Long id) {

@@ -13,7 +13,3 @@ spring:
 
 publisher:
   url: http://publisher-service:8080
-
-logging:
-  level:
-    simon.draftservice: DEBUG

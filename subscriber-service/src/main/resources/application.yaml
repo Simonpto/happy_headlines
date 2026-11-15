@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: subscriber-service
+  config:
+    import: classpath:monitoring.yaml
+  datasource:
+    url: jdbc:postgresql://db-subscriber:5432/subscribers
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+  rabbitmq:
+    host: rabbitmq

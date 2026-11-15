@@ -1,8 +1,6 @@
 package simon.draftservice.repository;
 
 import io.micrometer.observation.annotation.Observed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,19 +13,17 @@ import java.util.Optional;
 @Repository
 @Observed(name = "draft.database")
 public class DraftDatabase {
-    private static final Logger log = LoggerFactory.getLogger(DraftDatabase.class);
     private final JdbcClient jdbc;
 
     public DraftDatabase(JdbcClient jdbc) {
         this.jdbc = jdbc;
     }
 
-    public List<Draft> findAll() {
-        List<Draft> drafts = jdbc.sql("SELECT id, title, content, continent, published FROM draft ORDER BY id DESC")
+    public List<Draft> findAll(int page, int pageSize) {
+        return jdbc.sql("SELECT id, title, content, continent, published FROM draft ORDER BY id DESC LIMIT ? OFFSET ?")
+                .params(pageSize, page * pageSize)
                 .query(Draft.class)
                 .list();
-        log.debug("Loaded {} drafts", drafts.size());
-        return drafts;
     }
 
     public Optional<Draft> findById(Long id) {

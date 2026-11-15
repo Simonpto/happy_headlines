@@ -1,0 +1,22 @@
+# Tests run without Docker: in-memory H2, no RabbitMQ and nothing is sent to Seq
+spring:
+  application:
+    name: subscriber-service
+  config:
+    import: classpath:monitoring.yaml
+  datasource:
+    url: jdbc:h2:mem:subscribers;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+
+management:
+  tracing:
+    export:
+      enabled: false
+  logging:
+    export:
+      otlp:
+        enabled: false

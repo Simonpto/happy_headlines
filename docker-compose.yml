@@ -16,8 +16,9 @@ x-article-db: &article-db
     POSTGRES_DB: articles
 
 x-article-service: &article-service
-  build: ./article-service
+  build: { context: ., dockerfile: article-service/Dockerfile }
   environment:
+    SPRING_PROFILES_ACTIVE: prod
     DB_USER: postgres
     DB_PASSWORD: postgres
   restart: on-failure
@@ -55,8 +56,9 @@ services:
   db-global: *article-db
 
   comment-service:
-    build: ./comment-service
+    build: { context: ., dockerfile: comment-service/Dockerfile }
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_USER: postgres
       DB_PASSWORD: postgres
     restart: on-failure
@@ -70,8 +72,9 @@ services:
       POSTGRES_DB: comments
 
   profanity-service:
-    build: ./profanity-service
+    build: { context: ., dockerfile: profanity-service/Dockerfile }
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_USER: postgres
       DB_PASSWORD: postgres
     restart: on-failure
@@ -85,8 +88,9 @@ services:
       POSTGRES_DB: profanities
 
   draft-service:
-    build: ./draft-service
+    build: { context: ., dockerfile: draft-service/Dockerfile }
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_USER: postgres
       DB_PASSWORD: postgres
     ports:
@@ -103,14 +107,17 @@ services:
       POSTGRES_DB: drafts
 
   publisher-service:
-    build: ./publisher-service
+    build: { context: ., dockerfile: publisher-service/Dockerfile }
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
     restart: on-failure
     depends_on:
       rabbitmq: { condition: service_healthy }
 
   newsletter-service:
-    build: ./newsletter-service
+    build: { context: ., dockerfile: newsletter-service/Dockerfile }
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_USER: postgres
       DB_PASSWORD: postgres
     ports:
@@ -127,8 +134,9 @@ services:
       POSTGRES_DB: newsletters
 
   subscriber-service:
-    build: ./subscriber-service
+    build: { context: ., dockerfile: subscriber-service/Dockerfile }
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_USER: postgres
       DB_PASSWORD: postgres
     ports:

@@ -1,0 +1,7 @@
+# Keep the build context small - Docker builds the jars itself
+**/target
+.git
+.idea
+.github
+loadtest
+**/.DS_Store

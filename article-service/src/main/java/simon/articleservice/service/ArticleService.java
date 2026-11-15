@@ -1,6 +1,8 @@
 package simon.articleservice.service;
 
 import io.micrometer.observation.annotation.Observed;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
@@ -20,13 +22,17 @@ public class ArticleService {
         this.database = database;
     }
 
-    public List<Article> findAll(Continent continent) {
+    // Newest first, one page at a time. Cached because the front page is read far more often than it changes.
+    @Cacheable("articles")
+    public List<Article> findAll(Continent continent, int page, int pageSize) {
         return database.get(continent)
-                .sql("SELECT id, title, content FROM article ORDER BY id")
+                .sql("SELECT id, title, content FROM article ORDER BY id DESC LIMIT ? OFFSET ?")
+                .params(pageSize, page * pageSize)
                 .query(Article.class)
                 .list();
     }
 
+    @Cacheable("article")
     public Optional<Article> findById(Continent continent, Long id) {
         return database.get(continent)
                 .sql("SELECT id, title, content FROM article WHERE id = ?")
@@ -35,6 +41,7 @@ public class ArticleService {
                 .optional();
     }
 
+    @CacheEvict(cacheNames = {"articles", "article"}, allEntries = true)
     public Article create(Continent continent, Article article) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         database.get(continent)
@@ -45,6 +52,7 @@ public class ArticleService {
         return article;
     }
 
+    @CacheEvict(cacheNames = {"articles", "article"}, allEntries = true)
     public Optional<Article> update(Continent continent, Long id, Article updated) {
         int rows = database.get(continent)
                 .sql("UPDATE article SET title = ?, content = ? WHERE id = ?")
@@ -57,6 +65,7 @@ public class ArticleService {
         return Optional.of(updated);
     }
 
+    @CacheEvict(cacheNames = {"articles", "article"}, allEntries = true)
     public boolean delete(Continent continent, Long id) {
         int rows = database.get(continent)
                 .sql("DELETE FROM article WHERE id = ?")

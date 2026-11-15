@@ -5,6 +5,19 @@ spring:
     import: classpath:monitoring.yaml
   rabbitmq:
     host: rabbitmq
+  # Each instance keeps its own in-memory cache. Entries expire after 30 s, so a new article
+  # stored by another instance shows up here within 30 s at the latest.
+  cache:
+    type: caffeine
+    cache-names: articles,article # named up front so their hit/miss metrics are registered
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=30s,recordStats
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics # cache hit/miss: /actuator/metrics/cache.gets
 
 articles:
   databases:

@@ -15,9 +15,9 @@ public class ArticleClient {
         this.articleRestClient = articleRestClient;
     }
 
-    public List<Article> findAll(String continent) {
+    public List<Article> findNewest(String continent, int count) {
         return articleRestClient.get()
-                .uri("/articles/{continent}", continent)
+                .uri("/articles/{continent}?pageSize={count}", continent, count)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }

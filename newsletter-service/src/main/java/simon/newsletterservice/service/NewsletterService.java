@@ -48,9 +48,9 @@ public class NewsletterService {
         log.info("Sent breaking news '{}' to {} subscribers", article.title(), subscribers.size());
     }
 
-    // Fetches the articles from the article-service and sends them as one newsletter
+    // Fetches the 10 newest articles from the article-service and sends them as one newsletter
     public int sendNewsletter(String continent) {
-        List<Article> articles = articleClient.findAll(continent);
+        List<Article> articles = articleClient.findNewest(continent, 10);
         List<Subscriber> subscribers = database.findAll();
         for (Subscriber subscriber : subscribers) {
             log.debug("Sending newsletter with {} articles to subscriber {}", articles.size(), subscriber.getId());
